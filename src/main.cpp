@@ -2,6 +2,7 @@
 
 #include "coords.h"
 #include "shows/matrix.h"
+#include "shows/snake.h"
 #include "shows/palette.h"
 
 #define LED_PIN 2
@@ -36,6 +37,43 @@ void setup() {
     Serial.begin(9600);
 }
 
+#define OTHER_SHOW_COUNT 2
+void start_show(int showIndex) {
+    showIndex = showIndex % (PALETTE_COUNT + OTHER_SHOW_COUNT);
+    if (showIndex >= PALETTE_COUNT) {
+        // non-palette show
+        switch (showIndex - PALETTE_COUNT) {
+            case 0:
+                MatrixBehavior::start();
+                break;
+            case 1:
+                SnakeBehavior::start();
+                break;
+        }
+    } else {
+        // palette show
+        PaletteBehavior::start(showIndex);
+    }
+}
+
+void tick_show(int showIndex) {
+    showIndex = showIndex % (PALETTE_COUNT + OTHER_SHOW_COUNT);
+    if (showIndex >= PALETTE_COUNT) {
+        // non-palette show
+        switch (showIndex - PALETTE_COUNT) {
+            case 0:
+                MatrixBehavior::tick(leds);
+                break;
+            case 1:
+                SnakeBehavior::tick(leds);
+                break;
+        }
+    } else {
+        // palette show
+        PaletteBehavior::tick(leds);
+    }
+}
+
 void loop() {
     int brightness = map(analogRead(pinBrightness), 0, 1023, 0, 255);
     FastLED.setBrightness(brightness);
@@ -49,7 +87,7 @@ void loop() {
             // switch to touch based until restart
             isRunningPeriodicPalette = false;
             touchIncrement += 1;
-            PaletteBehavior::start(touchIncrement % (PALETTE_COUNT + 1));
+            start_show(touchIncrement);
 
             // ensure we don't keep switching if we keep touching
             hasTouched = true;
@@ -59,14 +97,14 @@ void loop() {
         static int previousSecond = -1;
         if (secondInMinute != previousSecond) {
             previousSecond = secondInMinute;
-            PaletteBehavior::start((secondInMinute / 5) % (PALETTE_COUNT + 1));
+            start_show((secondInMinute / 5) % (PALETTE_COUNT + 1));
         }
     } else {
         // releasing touch -> a new touch can be accepted
         hasTouched = false;
     }
 
-    PaletteBehavior::tick(leds);
+    tick_show(isRunningPeriodicPalette ? 0 : touchIncrement);
 
     int elapsed = millis() - before;
     Serial.println("Elapsed to tick: " + String(elapsed) + "ms");
