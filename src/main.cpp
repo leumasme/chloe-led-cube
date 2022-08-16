@@ -1,8 +1,8 @@
+#include <FastLED.h>
+
 #include "coords.h"
 #include "shows/matrix.h"
 #include "shows/palette.h"
-
-#include <FastLED.h>
 
 #define LED_PIN 2
 #define LED_TYPE WS2812
@@ -27,7 +27,7 @@ void setup() {
     delay(3000);  // power-up safety delay
     FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS)
         .setCorrection(TypicalLEDStrip);
-        
+
     pinMode(pinBrightness, INPUT);
     pinMode(pinTouch, INPUT);
 
@@ -41,6 +41,7 @@ void loop() {
     FastLED.setBrightness(brightness);
 
     // Check if human touched! If so we can switch from periodic palette
+    int before = millis();
     int touchState = digitalRead(pinTouch);
     if (touchState == HIGH) {
         if (!hasTouched) {
@@ -66,6 +67,9 @@ void loop() {
     }
 
     PaletteBehavior::tick(leds);
+
+    int elapsed = millis() - before;
+    Serial.println("Elapsed to tick: " + String(elapsed) + "ms");
 
     FastLED.show();
     FastLED.delay(1000 / UPDATES_PER_SECOND);
