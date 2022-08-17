@@ -105,6 +105,7 @@ void FillLEDsFromPaletteColors(uint8_t startIndex, CRGB leds[NUM_LEDS],
 }
 
 void start(int paletteNum) {
+    Serial.println("[Palette] Starting palette " + String(paletteNum));
     tickNum = 0;
     SetPalette(paletteNum, &palette, &blending);
 }

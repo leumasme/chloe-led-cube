@@ -37,7 +37,6 @@ void setup() {
 #define OTHER_SHOW_COUNT 2
 void start_show(int showIndex) {
     showIndex = showIndex % (PALETTE_COUNT + OTHER_SHOW_COUNT);
-    Serial.println("Switching to show/palette " + String(showIndex));
     if (showIndex >= PALETTE_COUNT) {
         // non-palette show
         switch (showIndex - PALETTE_COUNT) {
@@ -107,7 +106,7 @@ void loop() {
     tick_show(isRunningPeriodicPalette ? currentPalette : touchIncrement);
 
     int elapsed = millis() - before;
-    Serial.println("Elapsed to tick: " + String(elapsed) + "ms");
+    //Serial.println("Elapsed to tick: " + String(elapsed) + "ms");
 
     FastLED.show();
     FastLED.delay(1000 / UPDATES_PER_SECOND);

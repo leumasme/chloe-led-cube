@@ -12,6 +12,7 @@ struct MatrixPoint {
 MatrixPoint points[15] = {};
 
 void start() {
+    Serial.println("[Matrix] Starting");
     // clear points
     for (int i = 0; i < 15; i++) {
         points[i].x = 0;

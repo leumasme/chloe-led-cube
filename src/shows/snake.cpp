@@ -36,6 +36,7 @@ void place_food() {
 }
 
 void start() {
+    Serial.println("[Snake] Starting");
     // clear grid and reset
     for (int i = 0; i < NUM_LEDS; i++) {
         grid[i] = 0;
