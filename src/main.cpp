@@ -2,8 +2,8 @@
 
 #include "coords.h"
 #include "shows/matrix.h"
-#include "shows/snake.h"
 #include "shows/palette.h"
+#include "shows/snake.h"
 
 #define LED_PIN 2
 #define LED_TYPE WS2812
@@ -37,6 +37,7 @@ void setup() {
 #define OTHER_SHOW_COUNT 2
 void start_show(int showIndex) {
     showIndex = showIndex % (PALETTE_COUNT + OTHER_SHOW_COUNT);
+    Serial.println("Switching to show/palette " + String(showIndex));
     if (showIndex >= PALETTE_COUNT) {
         // non-palette show
         switch (showIndex - PALETTE_COUNT) {
@@ -72,6 +73,7 @@ void tick_show(int showIndex) {
 }
 
 void loop() {
+    static int currentPalette = -1;
     int brightness = map(analogRead(pinBrightness), 0, 1023, 0, 255);
     FastLED.setBrightness(brightness);
 
@@ -91,8 +93,8 @@ void loop() {
         }
     } else if (isRunningPeriodicPalette) {
         int secondInMinute = (millis() / 1000) % 60;
-        int nextPalette = (secondInMinute / 5) % (PALETTE_COUNT + 1);
-        static int currentPalette = -1;
+        int nextPalette =
+            (secondInMinute / 5) % (PALETTE_COUNT + OTHER_SHOW_COUNT);
         if (currentPalette != nextPalette) {
             currentPalette = nextPalette;
             start_show(nextPalette);
@@ -102,7 +104,7 @@ void loop() {
         hasTouched = false;
     }
 
-    tick_show(isRunningPeriodicPalette ? 0 : touchIncrement);
+    tick_show(isRunningPeriodicPalette ? currentPalette : touchIncrement);
 
     int elapsed = millis() - before;
     Serial.println("Elapsed to tick: " + String(elapsed) + "ms");
