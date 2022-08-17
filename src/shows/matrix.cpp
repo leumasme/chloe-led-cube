@@ -23,24 +23,29 @@ void start() {
 }
 
 void tick(CRGB leds[]) {
+    for (int i = 0; i < NUM_LEDS; i++) {
+        leds[i] = CRGB(0, 0, 0);
+    }
     // iterate over points and draw them with a green trail
     // upwards while moving down
     for (int i = 0; i < 15; i++) {
         MatrixPoint& point = points[i];
-        if (point.speed == 0) continue;
-        int y = point.uy / 1000;
+        if (points[i].speed == 0) continue;
+        int y = points[i].uy / 1000;
         for (int i = 0; i < 4; i++) {
             y++;
             if (y >= 0) {
-                CRGB* pixel = pixel_at_coords(leds, point.x, y, point.z);
+                CRGB* pixel =
+                    pixel_at_coords(leds, points[i].x, y, points[i].z);
                 // TODO: maybe nicer colors with soft smoothing
-                *pixel = CRGB(0, 255 - i * 50, 0);
+                pixel->setRGB(0, 250 - i * 80, 0);
             }
         }
+
         // remove point if its fully out of view
-        point.uy -= point.speed;
-        if (point.uy < -4000) {
-            point.speed = 0;
+        points[i].uy -= points[i].speed;
+        if (points[i].uy < -5000) {
+            points[i].speed = 0;
         }
     }
 

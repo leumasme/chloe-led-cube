@@ -7,7 +7,7 @@
 
 #define LED_PIN 2
 #define LED_TYPE WS2812
-#define COLOR_ORDER GRB
+#define COLOR_ORDER RGB
 #define UPDATES_PER_SECOND 100
 
 CRGB leds[NUM_LEDS];
