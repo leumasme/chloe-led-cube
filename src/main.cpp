@@ -17,9 +17,6 @@ int pinTouch = A2;
 // Rotation potentiometer to control brightness
 int pinBrightness = A0;
 
-CRGBPalette16 currentPalette;
-TBlendType currentBlending;
-
 uint8_t touchIncrement = 0;
 bool isRunningPeriodicPalette = true;
 bool hasTouched = false;
@@ -94,10 +91,11 @@ void loop() {
         }
     } else if (isRunningPeriodicPalette) {
         int secondInMinute = (millis() / 1000) % 60;
-        static int previousSecond = -1;
-        if (secondInMinute != previousSecond) {
-            previousSecond = secondInMinute;
-            start_show((secondInMinute / 5) % (PALETTE_COUNT + 1));
+        int nextPalette = (secondInMinute / 5) % (PALETTE_COUNT + 1);
+        static int currentPalette = -1;
+        if (currentPalette != nextPalette) {
+            currentPalette = nextPalette;
+            start_show(nextPalette);
         }
     } else {
         // releasing touch -> a new touch can be accepted
